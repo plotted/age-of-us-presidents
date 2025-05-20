@@ -1,0 +1,408 @@
+---
+title: "Age of U.S. Presidents"
+author: "Gaston Sanchez"
+date: "Summer 2024"
+toc: true
+format: 
+  gfm: default
+  html: default
+embed-resources: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+
+```{r pkgs, message = FALSE, echo = FALSE}
+# recent versions of tidyverse include "lubridate" (for working with dates)
+library(tidyverse)  # ecosystem of data science packages
+library(rvest)      # for web scraping
+```
+
+
+# Description
+
+The data visualization (see image below) of this module is based on the following
+post/article (by Katherine Schaeffer) of Pew Research Center (Oct 10, 2023):
+
+__Most U.S. presidents have been in their 50s at inauguration__
+
+<https://www.pewresearch.org/short-reads/2023/10/10/most-us-presidents-have-been-in-their-50s-at-inauguration/>
+
+![Median age for U.S. presidents at inauguration](median-age-for-presidents-at-inauguration.png)
+
+\
+
+## Details (datasheet)
+
+- __Topic(s)__: 
+  + Politics
+  + U.S.
+  + Age of presidents
+- __Data__:
+  + Size: small
+  + Format: raw data in HTML table (involves basic web scraping)
+  + Requires some cleansing (e.g. regex)
+  + Requires soft-coding (e.g. create vector for `party`)
+- __Graphic__:
+  + Type: scatterplot
+  + Interactive: no, but we can use `"plotly"` and `"ggiraph"`
+
+\
+
+
+## Other Sources
+
+Related to the above post, you can find similar sources from The New York Times
+and Wikipedia.
+
+__NYT: World Leader Ages__
+
+<https://www.nytimes.com/2020/07/16/opinion/america-presidents-old-age.html>
+
+<https://www.nytimes.com/2020/10/22/learning/whats-going-on-in-this-graph-world-leader-ages.html>
+
+
+__Wikipedia: List of presidents of the United States by age__
+
+<https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States_by_age>
+
+
+__Wikipedia: List of presidents of the United States__
+
+<https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States>
+
+
+## R Packages
+
+```{r pkgs, message = FALSE}
+```
+
+
+-----
+
+
+# Data
+
+The data for ages of US presidents is available in Wikipedia:
+
+<https://en.wikipedia.org/wiki/List_of_presidents_of_the_United_States_by_age>
+
+Specifically, the data is in the HTML table  "Presidential age-related data"
+of the Wikipedia webpage.
+
+
+## Download Data
+
+For data archival purposes, it's a good idea to download the HTML page 
+containing the table with the data of interest: "Presidential age-related data"
+
+```{r eval = FALSE}
+wiki = "https://en.wikipedia.org/wiki/"
+presidents = "List_of_presidents_of_the_United_States_by_age"
+
+wiki_url = paste0(wiki, presidents)
+
+download.file(wiki_url, destfile = paste0(presidents, ".html"))
+```
+
+
+## Import Data
+
+You can import the data directly from the Wikipedia webpage (via its URL), or 
+by reading-in the downloaded HTML file. In both cases we can read-in the HTML 
+page with the function `read_html()` from the package `"rvest"`
+
+```{r eval = FALSE}
+# import directly from wikipedia
+wiki = "https://en.wikipedia.org/wiki/"
+presidents = "List_of_presidents_of_the_United_States_by_age"
+
+wiki_url = paste0(wiki, presidents)
+
+doc = read_html(wiki_url)
+```
+
+Because we have a local copy of the HTML page, we prefer this option:
+
+```{r}
+# import from downloaded HTML file
+doc = read_html("List_of_presidents_of_the_United_States_by_age.html")
+```
+
+The function `read_html()` extracts ALL tables in an HTML document, and returns
+them in an R list. 
+
+The table we are interested in---**Presidential age-related data**---is the 
+first one in the list which we can select with the following command:
+
+```{r}
+tbls = html_table(doc)
+
+tbl = tbls[[1]]
+
+# get rid of first row
+tbl = tbl[-1, ]
+tbl
+```
+
+
+## Data Preparation
+
+Here's the list of (somewhat advanced) steps to do further manipulation so that 
+we have the necessary data for `ggplot`.
+
+```{r}
+# age at start of presidential period
+age_start = as.numeric(str_extract(tbl$`Age atstart of presidency`, "^\\d+"))
+
+# age at the end of presidential period
+age_end = as.numeric(str_extract(tbl$`Age atend of presidency`, "^\\d+"))
+
+# Donald Trump's current age
+age_end[47] = 78
+
+year_start = as.numeric(str_extract(tbl$`Age atstart of presidency`, "\\d+$"))
+
+year_end = as.numeric(str_extract(tbl$`Age atend of presidency`, "\\d{4}"))
+year_end[47] = 2025
+```
+
+
+### Adding Party
+
+```{r}
+party = c(
+  "Other",      # "Washington"
+  "Federalist", # "Adams"     
+  "Federalist", # "Jefferson" 
+  "Federalist", # "Madison"   
+  "Federalist", # "Monroe"    
+  "Federalist", # "Adams"     
+  "Democratic", # "Jackson"   
+  "Democratic", # "Buren"     
+  "Whig",       # "Harrison"  
+  "Whig",       # "Tyler"     
+  "Democratic", # "Polk"      
+  "Whig",       # "Taylor"    
+  "Whig",       # "Fillmore"  
+  "Democratic", # "Pierce"    
+  "Democratic", # "Buchanan"  
+  "Republican", # "Lincoln"   
+  "Democratic", # "Johnson"   
+  "Republican", # "Grant"     
+  "Republican", # "Hayes"     
+  "Republican", # "Garfield"  
+  "Republican", # "Arthur"    
+  "Democratic", # "Cleveland" 
+  "Republican", # "Harrison"  
+  "Democratic", # "Cleveland" 
+  "Republican", # "McKinley"  
+  "Republican", # "Roosevelt" 
+  "Republican", # "Taft"      
+  "Democratic", # "Wilson"    
+  "Republican", # "Harding"   
+  "Republican", # "Coolidge"  
+  "Republican", # "Hoover"    
+  "Democratic", # "Roosevelt" 
+  "Democratic", # "Truman"    
+  "Republican", # "Eisenhower"
+  "Democratic", # "Kennedy"   
+  "Democratic", # "Johnson"   
+  "Republican", # "Nixon"     
+  "Republican", # "Ford"      
+  "Democratic", # "Carter"    
+  "Republican", # "Reagan"    
+  "Republican", # "Bush"      
+  "Democratic", # "Clinton"   
+  "Republican", # "Bush"      
+  "Democratic", # "Obama"     
+  "Republican", # "Trump"     
+  "Democratic", # "Biden"
+  "Republican"  # Trump
+)
+```
+
+
+### Clean Table
+
+Having all the ingredients in place we proceed to assemble a "tidy" table
+(this can be a `"tibble"` or also a `"data.frame"`)
+
+```{r}
+dat = tibble(
+  "president" = tbl$President, 
+  "party" = party,
+  "age_start" = age_start, 
+  "age_end" = age_end,
+  "year_start" = year_start,
+  "year_end" = year_end)
+
+dat = dat |>
+  mutate(color = case_when(
+    party == "Democratic" ~ "#468BFA",
+    party == "Republican" ~ "#FC4E4B",
+    .default = "#FFD438"
+  ))
+
+dat
+```
+
+
+-----
+
+
+# Graphs
+
+As usual, let's go over a series of plotting rounds, starting with a default
+bar chart, and then gradually adding more elements, and customizing its appearance to get as close as possible to our target visualization.
+
+
+## Version 1
+
+We use 2 `geom_point()` layers since there are 2 kinds of points: the 
+starting age-year, and the ending age-year.
+
+```{r}
+# 1st attempt
+ggplot(dat) +
+  geom_point(aes(x = year_start, y = age_start)) +
+  geom_point(aes(x = year_end, y = age_end))
+```
+
+
+
+## Version 2
+
+Adding color to points
+
+```{r}
+# 2nd attempt
+ggplot(dat) +
+  geom_point(aes(x = year_start, y = age_start), color = dat$color) +
+  geom_point(aes(x = year_end, y = age_end), color = dat$color)
+```
+
+
+## Version 3
+
+Adding median age line
+
+```{r}
+# 3rd attempt
+ggplot(dat) +
+  geom_hline(yintercept = median(dat$age_start)) +
+  geom_point(aes(x = year_start, y = age_start), color = dat$color) +
+  geom_point(aes(x = year_end, y = age_end), color = dat$color) 
+```
+
+
+
+## Version 4
+
+```{r}
+# 4th attempt
+ggplot(dat) +
+  geom_hline(yintercept = seq(30, 90, by = 10), linetype = "dotted") +
+  geom_hline(yintercept = median(dat$age_start)) +
+  geom_point(aes(x = year_start, y = age_start), color = dat$color) +
+  geom_point(aes(x = year_end, y = age_end), color = dat$color) +
+  scale_y_continuous(breaks = seq(30, 90, by = 10))
+```
+
+
+
+## Version 5
+
+```{r}
+# 5th attempt
+ggplot(dat) +
+  geom_hline(yintercept = seq(30, 90, by = 10), linetype = "dotted") +
+  geom_hline(yintercept = median(dat$age_start)) +
+  geom_point(aes(x = year_start, y = age_start), color = dat$color) +
+  geom_point(aes(x = year_end, y = age_end), color = dat$color) +
+  geom_segment(aes(x = year_start, y = age_start, xend = year_end, yend = age_end)) +
+  scale_y_continuous(breaks = seq(30, 90, by = 10))
+```
+
+
+
+## Version 6
+
+```{r}
+# 6th attempt
+ggplot(dat) +
+  geom_hline(yintercept = seq(30, 90, by = 10), linetype = "dotted") +
+  geom_hline(yintercept = median(dat$age_start)) +
+  geom_point(aes(x = year_start, y = age_start), color = dat$color, shape = 21) +
+  geom_point(aes(x = year_end, y = age_end), color = dat$color, shape = 21) +
+  geom_segment(aes(x = year_start, y = age_start, xend = year_end, yend = age_end),
+               linewidth = 1.5, color = dat$color, alpha = 0.5) +
+  scale_y_continuous(breaks = seq(30, 90, by = 10))
+```
+
+
+## Version 7
+
+```{r}
+# 7th attempt
+ggplot(dat) +
+  geom_hline(yintercept = seq(30, 90, by = 10), linetype = "dotted") +
+  geom_hline(yintercept = median(dat$age_start)) +
+  geom_point(aes(x = year_start, y = age_start), color = dat$color, shape = 21) +
+  geom_point(aes(x = year_end, y = age_end), color = dat$color, shape = 21) +
+  geom_segment(aes(x = year_start, y = age_start, xend = year_end, yend = age_end),
+               linewidth = 1.5, color = dat$color, alpha = 0.5) +
+  geom_text(aes(x = year_start, y = age_start,
+                label = str_extract(president, "\\w+$")), size = 2.5, color = dat$color) +
+  scale_y_continuous(breaks = seq(30, 90, by = 10))
+```
+
+
+## Version 8
+
+```{r}
+# 8th attempt
+ggplot(dat) +
+  geom_hline(yintercept = seq(30, 90, by = 10), linetype = "dotted") +
+  geom_hline(yintercept = median(dat$age_start)) +
+  geom_point(aes(x = year_start, y = age_start), color = dat$color, shape = 21) +
+  geom_point(aes(x = year_end, y = age_end), color = dat$color, shape = 21) +
+  geom_segment(aes(x = year_start, y = age_start, xend = year_end, yend = age_end),
+               linewidth = 1.5, color = dat$color, alpha = 0.5) +
+  geom_text(aes(x = year_end, y = age_end, label = str_extract(president, "\\w+$")),
+            size = 2.5, color = dat$color, vjust = -0.5) +
+  scale_y_continuous(breaks = seq(30, 90, by = 10))
+```
+
+
+
+## Final attempt
+
+```{r}
+# 9th attempt
+ggplot(dat) +
+  geom_hline(yintercept = seq(30, 90, by = 10), 
+             linetype = "dotted", color = "gray70") +
+  geom_hline(yintercept = median(dat$age_start), linewidth = 0.25) +
+  geom_segment(aes(x = year_start, y = age_start, xend = year_end, yend = age_end),
+               linewidth = 1.5, color = dat$color, alpha = 0.5) +
+  geom_point(aes(x = year_start, y = age_start), 
+             color = dat$color, shape = 21, fill = "white") +
+  geom_point(aes(x = year_end, y = age_end), 
+             color = dat$color, shape = 21, fill = "white") +
+  geom_text(aes(x = year_end, y = age_end, label = str_extract(president, "\\w+$")),
+            size = 2.5, color = dat$color, vjust = -0.5) +
+  scale_y_continuous(breaks = seq(30, 90, by = 10)) +
+  scale_x_continuous(breaks = seq(1780, 2024, by = 12)) +
+  labs(title = "Ages of U.S. presidents, 1789-2025",
+       subtitle = "The median age at first inauguration is 55 years old",
+       x = "",
+       y = "age") +
+  theme(axis.line = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank())
+```
+
