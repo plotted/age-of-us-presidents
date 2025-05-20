@@ -2,26 +2,35 @@
 Gaston Sanchez
 2024-01-01
 
-- [Description](#description)
-  - [Details (datasheet)](#details-datasheet)
-  - [Other Sources](#other-sources)
-  - [R Packages](#r-packages)
-- [Data](#data)
-  - [Download Data](#download-data)
-  - [Import Data](#import-data)
-  - [Data Preparation](#data-preparation)
-    - [Adding Party](#adding-party)
-    - [Clean Table](#clean-table)
-- [Graphs](#graphs)
-  - [Version 1](#version-1)
-  - [Version 2](#version-2)
-  - [Version 3](#version-3)
-  - [Version 4](#version-4)
-  - [Version 5](#version-5)
-  - [Version 6](#version-6)
-  - [Version 7](#version-7)
-  - [Version 8](#version-8)
-  - [Final attempt](#final-attempt)
+- [<span class="toc-section-number">1</span> Description](#description)
+  - [<span class="toc-section-number">1.1</span> Details
+    (datasheet)](#details-datasheet)
+  - [<span class="toc-section-number">1.2</span> Other
+    Sources](#other-sources)
+  - [<span class="toc-section-number">1.3</span> R
+    Packages](#r-packages)
+- [<span class="toc-section-number">2</span> Data](#data)
+  - [<span class="toc-section-number">2.1</span> Download
+    Data](#download-data)
+  - [<span class="toc-section-number">2.2</span> Import
+    Data](#import-data)
+  - [<span class="toc-section-number">2.3</span> Data
+    Preparation](#data-preparation)
+    - [<span class="toc-section-number">2.3.1</span> Adding
+      Party](#adding-party)
+    - [<span class="toc-section-number">2.3.2</span> Clean
+      Table](#clean-table)
+- [<span class="toc-section-number">3</span> Graphs](#graphs)
+  - [<span class="toc-section-number">3.1</span> Version 1](#version-1)
+  - [<span class="toc-section-number">3.2</span> Version 2](#version-2)
+  - [<span class="toc-section-number">3.3</span> Version 3](#version-3)
+  - [<span class="toc-section-number">3.4</span> Version 4](#version-4)
+  - [<span class="toc-section-number">3.5</span> Version 5](#version-5)
+  - [<span class="toc-section-number">3.6</span> Version 6](#version-6)
+  - [<span class="toc-section-number">3.7</span> Version 7](#version-7)
+  - [<span class="toc-section-number">3.8</span> Version 8](#version-8)
+  - [<span class="toc-section-number">3.9</span> Final
+    attempt](#final-attempt)
 
 # Description
 

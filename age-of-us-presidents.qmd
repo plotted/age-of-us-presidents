@@ -3,9 +3,11 @@ title: "Age of U.S. Presidents"
 author: "Gaston Sanchez"
 date: "Summer 2024"
 toc: true
+number-sections: true
+theme: zephyr
 format: 
-  gfm: default
   html: default
+  gfm: default
 embed-resources: true
 ---
 
