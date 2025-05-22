@@ -7,7 +7,7 @@ This repository contains code in R to replicate the following graphic:
 
 \
 
-![Median age for U.S. presidents at inauguration](median-age-for-presidents-at-inauguration.png){width=80%}
+![Median age for U.S. presidents at inauguration](source/median-age-for-presidents-at-inauguration.png){width=80%}
 
 
 
@@ -19,11 +19,11 @@ This repository contains code in R to replicate the following graphic:
 
 - Date: Oct 10, 2023
 
-- Organization: Pew Research Center
+- From: Pew Research Center
 
 - URL: <https://www.pewresearch.org/short-reads/2023/10/10/most-us-presidents-have-been-in-their-50s-at-inauguration/>
 
-- PDF: [most-us-presidents-have-been-in-their-50s-at-inauguration.pdf](most-us-presidents-have-been-in-their-50s-at-inauguration.pdf)
+- PDF: [most-us-presidents-have-been-in-their-50s-at-inauguration.pdf](source/most-us-presidents-have-been-in-their-50s-at-inauguration.pdf)
 
 
 

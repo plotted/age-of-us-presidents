@@ -1,7 +1,7 @@
 ---
 title: "Age of U.S. Presidents"
 author: "Gaston Sanchez"
-date: "Summer 2024"
+date: "June, 2024"
 toc: true
 number-sections: true
 theme: zephyr
@@ -26,13 +26,13 @@ library(rvest)      # for web scraping
 # Description
 
 The data visualization (see image below) of this module is based on the following
-post/article (by Katherine Schaeffer) of Pew Research Center (Oct 10, 2023):
+Pew Research Center post/article by Katherine Schaeffer (Oct 10, 2023):
 
 __Most U.S. presidents have been in their 50s at inauguration__
 
 <https://www.pewresearch.org/short-reads/2023/10/10/most-us-presidents-have-been-in-their-50s-at-inauguration/>
 
-![Median age for U.S. presidents at inauguration](median-age-for-presidents-at-inauguration.png)
+![Median age for U.S. presidents at inauguration](source/median-age-for-presidents-at-inauguration.png)
 
 \
 
@@ -78,7 +78,7 @@ __Wikipedia: List of presidents of the United States__
 
 ## R Packages
 
-```{r pkgs, message = FALSE}
+```{r pkgs, eval = FALSE}
 ```
 
 
